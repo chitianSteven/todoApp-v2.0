@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+	<title>Contact List App</title>
+<script type="text/javascript" src="javascripts/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="javascripts/jquery-migrate-1.2.1.js"></script>
+<script type="text/javascript" src="javascripts/angular.js"></script>
+<script type="text/javascript" src="javascripts/angular-animate.js"></script>
+<script type="text/javascript" src="javascripts/angular-route.js"></script>
+<script type="text/javascript" src="javascripts/angular-resource.js"></script>
+<script src="javascripts/ui-bootstrap-tpls-0.14.3.min.js"></script>
+<link rel="stylesheet" type="text/css" href="stylesheets/slick.css" >
+<link rel="stylesheet" type="text/css" href="stylesheets/slick-theme.css" >
+<link rel="stylesheet" type="text/css" href="stylesheets/main.css" >
+</head>
+<body>
+<header>
+	<h3>ShenZhen 23° Rain</h3>
+	<nav>
+		<ul>
+			<li>Quick Note</li>
+			<li id="contactList">Contact List</li>
+			<li>Customize</li>
+		</ul>
+	</nav>
+</header>
+<content ng-controller="TodoController">
+	<div class="myNotebook">
+	<div class="leftPage">
+		<h1>My notebook</h1>
+		<div>
+			<div class="noteDetails">
+				Note Tilte: 
+				<input id="noteTitle" maxlength="40" type="text" ng-model="thisTodo.title" ng-value="thisTodo.title">
+				<textarea id="noteTodo" maxlength="100" ng-model="thisTodo.content">{{thisTodo.content}}</textarea>
+				<div>
+					<label>Classification: </label>
+					<select id="noteClass" ng-model="thisTodo.priority">
+						<option value="emergency">Emergency</option>
+						<option value="normal">Normal</option>
+						<option value="not important">Not important</option>
+					</select>
+				</div>
+				<div>
+					<input id="noteAlarm" type="checkbox"><label style="margin-right: 15px; margin-left: 5px" ng-model="thisTodo.alarm" checked="thisTodo.alarm">Alarm</label>
+					<select>
+						<option ng-repeat="option in alarmDays" value="{{option}}">{{option}}</option>
+					</select>
+					Days
+					<select>
+						<option ng-repeat="option in alarmHours" value="{{option}}">{{option}}</option>
+					</select>
+					Hours
+					<select>
+						<option ng-repeat="option in alarmMinites" value="{{option}}">{{option}}</option>
+					</select>
+					Minites
+				</div>
+				<div style="margin-bottom: 6px">
+					<input id="noteComplete" type="checkbox" ng-model="thisTodo.complete" checked="thisTodo.complete">
+					<label>Complete</label>
+				</div>
+				<div class="cssFlex">
+					<a href="" ng-click="update('notelist', thisTodo)">Update</a>
+					<a href="" ng-click="back('notelist')">Back</a>
+				</div>
+			</div>
+				<div class="calendarSection">
+					<div id="calendar-container">
+						<div id="calendar-header">
+							<img id="preMonth" src="icons/iconArrow.png" ng-click="changeMonth()">
+							<span id="calendar-month-year"></span>
+							<img id="nextMonth" src="icons/iconArrow.png" ng-click="changeMonth()">
+						</div>
+						<hr class="horiHr">
+						<div id="calendar-dates"></div>
+					</div>
+					<div id="oneDate">
+						<div id="oneDateUpside">
+							<div id="oneDateHeader">
+								<img src="icons/iconPins.png">
+							</div>
+							<div id="oneDateMonth">
+								<label id="Month"></label>
+							</div>
+						</div>
+						<div id="oneDateDownside">
+							<div id="oneDateDay">
+								<label id="Day"></label>
+							</div>
+							<hr class="horiHr">
+							<div id="oneDateMark">
+								<a id="red" ng-click="changeDateColor()">&nbsp;</a>
+								<a id="blue" ng-click="changeDateColor()">&nbsp;</a>
+								<a id="yellow" ng-click="changeDateColor()">&nbsp;</a>
+								<a id="green" ng-click="changeDateColor()">&nbsp;</a>
+							</div>
+						</div>
+					</div>
+					<div id="musicPlayer">
+						<sound-manager></sound-manager>
+						<div class="musicUpside" ng-init="muted = false">
+							<div class="musicDisplay">
+								<p>
+				                    Song:&nbsp;&nbsp;{{ currentPlaying.title }}
+				                    <br>
+				                    Artist:&nbsp;&nbsp;{{ currentPlaying.artist }}
+				                </p>
+								<div class="musicVoice">
+					                <label style="float: right">Volume: {{ volume }}</label>
+					                <br>
+					                <div class="musicVoiceActions">
+						                <img src="icons/iconIncrease.png" music-volume data-type="increase"></img>
+						                <img src="icons/iconDecrease.png" music-volume data-type="decrease"></img>
+					                </div>
+								</div>
+							</div>
+							<div class="musicMiddleBar">
+				                <label>{{ currentPostion }}</label>
+				                <div class="seekBase" seek-track>
+	                    			<div class="seekLoad" ng-style="{width : ( progress + '%' ) }"></div>
+	                			</div>
+	                    		<label>{{ currentDuration }}</label>
+                    		</div>
+						</div>
+						<div class="musicDownside" ng-init="played = false">				
+							<div ng-class="{'musicPushed': repeat}" repeat-music>
+				                <img src="icons/iconRepeat.png"></img>
+			                </div>
+			                <div>
+			                <img src="icons/iconNext.png" style="transform: translateY(3px) rotateZ(180deg)" prev-track></img>
+			                </div>
+			                <div ng-class="{'musicPushed': played}">
+							<img play-pause-toggle data-play="Play!" data-pause="Pause!" src="icons/iconPlay.png" ng-click="played = !played"></img>
+							</div>
+			                <div >
+			                <img src="icons/iconNext.png" next-track></img>
+			                </div>
+						</div>
+					</div>
+				</div>
+			<div class="furtherFeathers">
+				<h1>Feathers</h1>
+				<div>
+					<img id="featherMusic" src="icons/iconMusic.png">
+					<img id="featherRadio" src="icons/iconRadio.png">
+					<img id="featherDraw" src="icons/iconDraw.png">
+					<img id="featherFacebook" src="icons/iconFacebook.png">
+					<img id="featherTwitter" src="icons/iconTwitter.png">
+					<img id="featherGoogle" src="icons/iconGoogle.png">
+					<img id="featherAdd" src="icons/iconAdd.png">
+				</div>
+			</div>
+		</div>
+	</div>
+		<div class="rightPage">
+			<h1>To do list</h1>
+			<div>
+			    <div class= "todoList">
+			        <a class="addTask" href="" ng-click="save('notelist')">+Add a New Task</a>
+					<hr>
+			        <div class="noteTitle" ng-repeat="todo in filteredTodos| orderBy: 'complete': false" ng-init="todo.complete">
+						<input ng-model="todo.complete" type="checkbox" ng-checked="todo.complete">
+			        	<div class="noteInput">
+					        <label ng-click="editing = !editing" ng-class="{'completedTodo': todo.complete}" ng-hide="editing">{{todo.title}}</label>
+				            <input ng-blur="editing = false" ng-focus="true" ng-hide="!editing" type="text" ng-model="todo.title" maxlength="40">
+			            </div>
+			            <div class="noteActions">
+							<a href="" ng-click="edit('notelist', todo)">Edit</a>
+							<a href="" ng-click="update('notelist', todo)">Save</a>
+							<a href="" ng-click="delete('notelist', todo._id)">Delete</a>
+						</div>
+						<hr class="horiHr">
+			        </div>
+			        <div ng-hide="totalPage==0">
+			        	{{currentPage}}/{{totalPage}}
+				        <uib-pager total-items="totalItems" ng-model="currentPage" class="pagination"></uib-pager>
+			        </div>
+			        <div id="noNotesDay" ng-hide="totalPage!==0">
+			        	<img src="images/happyDay.jpg">
+			        	<div>
+				        	<label>Enjoy your day~</label>
+			        	</div>
+			        </div>
+			    </div>
+			    <div class= "newsSection">
+		    	<h1>News Today</h1>
+		    	<div class="variable-width">
+				  <div><img src="images/img1-s.jpg"></div>
+				  <div><img src="images/img2-s.jpg"></div>
+				  <div><img src="images/img3-s.jpg"></div>
+				  <div><img src="images/img4-s.jpg"></div>
+				  <div><img src="images/img5-s.jpg"></div>
+				  <div><img src="images/img6-s.jpg"></div>
+				</div>
+		    </div>
+			</div>
+		</div>
+	</div>
+	<div id="modalsContainer">
+	</div>
+	<div id="contactHomeModalContainer" class="modalContainer">
+		<h1>Contact List</h1> 
+		<div id="contactHome" class= "todoList">
+	        <a class="addTask" href="" ng-click="save('contactlist')">+Add a New Contact</a>
+			<hr>
+	        <div ng-hide="totalPageContact==0" class="noteTitle" ng-repeat="contact in filteredContacts">
+	        	<div class="noteInput">
+			        <label ng-click="editing = !editing" ng-hide="editing">{{contact.name}}</label>
+		            <input ng-blur="editing = false" ng-focus="true" ng-hide="!editing" type="text" ng-model="contact.name" maxlength="40">
+	            </div>
+	            <div class="noteActions">
+					<a href="" ng-click="edit('contactlist', contact)">Edit</a>
+					<a href="" ng-click="update('contactlist',contact)">Save</a>
+					<a href="" ng-click="delete('contactlist', contact._id)">Delete</a>
+				</div>
+				<hr class="horiHr">
+	        </div>
+	        <div ng-hide="totalPageContact==0">
+	        	{{currentPageContact}}/{{totalPageContact}}
+		        <uib-pager total-items="totalItemsContact" ng-model="currentPageContact" class="pagination"></uib-pager>
+	        </div>
+	        <div id="noNotesDay" ng-hide="totalPageContact!==0">
+	        	<img src="images/contact.jpg">
+	        	<div>
+		        	<label>Add some new contacts~</label>
+	        	</div>
+	        </div>
+	    </div>
+	</div>
+	<div id="contactDetailsModalContainer" class="modalContainer">
+		<h1>Contact Details</h1> 
+		<hr>
+		Name: <input type="text" maxlength="40" ng-model="thisContact.name">
+		<br>
+		Gendar: <input type="radio" ng-model="thisContact.gendar" ng-value="male">male|
+		<input type="radio" ng-model="thisContact.gendar" ng-value="female">female
+		<br>
+		Phone: <input type="text" maxlength="20" ng-model="thisContact.phone">
+		<br>
+		Email: <input type="text" maxlength="20" ng-model="thisContact.email">
+		<br>
+		Address: <input type="text" maxlength="30" ng-model="thisContact.address">
+		<br>
+		Note: <textarea maxlength="40" ng-model="thisContact.note"></textarea>
+		<div class="cssFlex">
+			<a href="" ng-click="update('contactlist', thisContact)">Update</a>
+			<a href="" ng-click="back('contactlist')">Back</a>
+		</div>
+	</div>
+
+	<div id="musicModalContainer" class="modalContainer">
+		<h1>Music Setting</h1> 
+		<div id="musicModal">
+			<h5>Songs</h5>
+	        <ul>
+	            <li ng-repeat="song in songs">
+	                <button music-player="play" add-song="song">{{ song.title }}</button>
+	                <button music-player add-song="song">+</button>
+	            </li>
+	        </ul>
+	        <button play-all="songs">Play all</button>
+	        <button play-all="songs" data-play="false">Add all</button>
+	        <h5>Playlist</h5>
+	        <ul>
+	            <li ng-repeat="song in playlist">
+	                <a play-from-playlist="song">{{ song.title }}</a>
+	                -
+	                <a remove-from-playlist="song" data-index="{{$index}}">
+	                    <small>(remove)</small>
+	                </a>
+	                <span ng-if="currentPlaying.id == song.id"> - (current)</span>
+	            </li>
+	        </ul>
+        </div>
+	</div>
+</content>
+<script src="javascripts/slick.min.js"></script>
+<script src="controllers/TodoController.js"></script>
+<script src="javascripts/angular-soundmanager2.min.js"></script>
+</body>
+</html>
