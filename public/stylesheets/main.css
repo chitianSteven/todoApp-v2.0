@@ -111,6 +111,10 @@ nav ul li a {
 	color: white;
 }
 
+.select {
+	max-height: 5em;
+}
+
 /*------  2.2 Icon------*/
 nav ul li:before {
 	content:url("../icons/iconArrow.png");
@@ -135,7 +139,22 @@ nav ul li:hover:before {
 }
 
 #contactDetails {
+	margin: 10px;
+}
 
+#contactDetails input {
+	margin-bottom: 5px;
+}
+
+#contactDetails .cssFlex {
+	margin: 10px 0px;
+}
+
+#contactDetails textarea {
+	resize: none;
+    height: 5em;
+    width: 100%;
+    border-radius: 5px;
 }
 
 /*------3. Content------*/
@@ -143,17 +162,21 @@ nav ul li:hover:before {
 	display: flex;
 	justify-content: center;
 	margin-top: 20px;
+	flex-flow: row wrap;
 }
 /*------	3.1 Primary Content------*/
 .rightPage,
 .leftPage {
 	width: 450px;
 	background-image: url("../images/bookBackground.jpg");
+	background-size: 100%;
 	border-radius: 8px;
 	border-width: 1px;
 	border-style: solid;
 	overflow: hidden;
 	position: relative;
+	transition: .5s;
+	flex-basis: 30em;
 }
 
 .cssFlex {
@@ -659,11 +682,11 @@ nav ul li:hover:before {
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 100%;
+	height: 110%;
 	background-color: gray;
 	opacity: 0;
-	transition: 1s;
-	transform: scale(.01);
+	transition: .1s;
+	z-index: -10;
 }
 
 .modalContainer {
@@ -683,9 +706,7 @@ nav ul li:hover:before {
 
 /*------6. media------*/
 @media screen and (max-width: 965px) {
-	#oneDate {
-  		display: none;
-	}
+
 }
 
 /*@media screen and (max-width: 2000px) {

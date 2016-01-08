@@ -43,16 +43,19 @@
 				</div>
 				<div>
 					<input id="noteAlarm" type="checkbox"><label style="margin-right: 15px; margin-left: 5px" ng-model="thisTodo.alarm" checked="thisTodo.alarm">Alarm</label>
+					
 					<select>
-						<option ng-repeat="option in alarmDays" value="{{option}}">{{option}}</option>
+						<option ng-repeat="option in alarmDays" value="{{option}}" ng-click="alarmSelect(option,'day')">{{option}}</option>
 					</select>
 					Days
+					
 					<select>
-						<option ng-repeat="option in alarmHours" value="{{option}}">{{option}}</option>
+						<option ng-repeat="option in alarmHours" value="{{option}}" ng-click="alarmSelect(option,'hour')">{{option}}</option>
 					</select>
 					Hours
+					
 					<select>
-						<option ng-repeat="option in alarmMinites" value="{{option}}">{{option}}</option>
+						<option ng-repeat="option in alarmMinites" value="{{option}}" ng-click="alarmSelect(option,'minites')">{{option}}</option>
 					</select>
 					Minites
 				</div>
@@ -230,22 +233,24 @@
 	</div>
 	<div id="contactDetailsModalContainer" class="modalContainer">
 		<h1>Contact Details</h1> 
-		<hr>
-		Name: <input type="text" maxlength="40" ng-model="thisContact.name">
-		<br>
-		Gendar: <input type="radio" ng-model="thisContact.gendar" ng-value="male">male|
-		<input type="radio" ng-model="thisContact.gendar" ng-value="female">female
-		<br>
-		Phone: <input type="text" maxlength="20" ng-model="thisContact.phone">
-		<br>
-		Email: <input type="text" maxlength="20" ng-model="thisContact.email">
-		<br>
-		Address: <input type="text" maxlength="30" ng-model="thisContact.address">
-		<br>
-		Note: <textarea maxlength="40" ng-model="thisContact.note"></textarea>
-		<div class="cssFlex">
-			<a href="" ng-click="update('contactlist', thisContact)">Update</a>
-			<a href="" ng-click="back('contactlist')">Back</a>
+		<div id="contactDetails">
+			<hr>
+			Name: <input type="text" maxlength="40" ng-model="thisContact.name">
+			<br>
+			Gendar: <input type="radio" ng-model="thisContact.gendar" value="male">male|
+			<input type="radio" ng-model="thisContact.gendar" value="female">female
+			<br>
+			Phone: <input type="text" maxlength="20" ng-model="thisContact.phone">
+			<br>
+			Email: <input type="text" maxlength="20" ng-model="thisContact.email">
+			<br>
+			Address: <input type="text" maxlength="30" ng-model="thisContact.address">
+			<br>
+			Note: <textarea maxlength="40" ng-model="thisContact.note"></textarea>
+			<div class="cssFlex">
+				<a href="" ng-click="update('contactlist', thisContact)">Update</a>
+				<a href="" ng-click="back('contactlist')">Back</a>
+			</div>
 		</div>
 	</div>
 

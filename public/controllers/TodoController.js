@@ -12,7 +12,6 @@ angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'ui.bootstrap', '
       });
     }])
 
-
     .controller('TodoController', ['$scope', 'Todos', 'ContactList', function ($scope, Todos, ContactList) {
 
     	//-----------1. Variables setting--------------------//
@@ -41,6 +40,9 @@ angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'ui.bootstrap', '
 	    //set the Date variables
 		var month_name = ['January','February', 'March', 'April', 'May', 'June', 'July', 'Augst', 'September', 'Octorber', 'Novmenber', 'December'];
 		var day_name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+		var blue = "#00b5d1",
+		yellow = "#EBF056",
+		green = "#99E8A8";
 
 
     	//---------------------------------------------------//
@@ -67,6 +69,7 @@ angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'ui.bootstrap', '
 	    	} else if (database==="contactlist") {
 		        ContactList.update({id: data._id}, data);
 	        }
+		    $scope.back(database);
 	    };
 
 	    $scope.delete = function(database, id){
@@ -117,7 +120,7 @@ angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'ui.bootstrap', '
 	    	if (database==="notelist") {
 				$scope.todos = Todos.query();
 				if ($scope.todos.length===0) {
-					console.log($scope.totalPage);
+					// console.log($scope.totalPage);
 				} 	
 				// var date;
 				// for (var i=0; i<$scope.todos.length; i=i+1) {
@@ -156,16 +159,17 @@ angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'ui.bootstrap', '
 	    	} else if (database==="contactlist") {
 	    		$scope.thisContact = data;
 	    		var style3 = {
-	    			transform: "rotateX(180deg)",
+	    			transform: "rotateY(180deg)",
 	    			"z-index": "-10",
 	    			opacity: 0
 	    		};
 	    		var style4 = {
-	    			transform: "rotateX(0deg)",
+	    			transform: "rotateY(0deg)",
 	    			"z-index": "10",
 	    			opacity: 1
 	    		}
-
+	    		$("#contactHomeModalContainer").css(style3);
+	    		$("#contactDetailsModalContainer").css(style4);
 			}		
 		}
 		
@@ -180,8 +184,19 @@ angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'ui.bootstrap', '
 				};
 				$(".leftPage .noteDetails").css(styles2);
 				$(".leftPage .calendarSection").css(styles1);
-			} else {
-
+			} else if (database==="contactlist") {
+				var styles3 = {
+					transform: "rotateY(180deg)",
+					"z-index": "0",
+					opacity: "0",
+				};
+				var styles4 = {
+					transform: "rotateY(0)",
+					"z-index": "10",
+					opacity: "1",
+				};
+				$("#contactHomeModalContainer").css(styles4);
+				$("#contactDetailsModalContainer").css(styles3);
 			} 
 		}
 
@@ -310,13 +325,13 @@ angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'ui.bootstrap', '
 			var color = e.target.id;
 			switch(color) {
 				case "blue":
-					color = "#00b5d1";
+					color = blue;
 					break;
 				case "yellow":
-					color = "#EBF056";
+					color = yellow;
 					break;
 				case "green": 
-					color = "#99E8A8";
+					color = green;
 					break;
 			}
 			var styles1 = {
@@ -335,18 +350,40 @@ angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'ui.bootstrap', '
 			});
 		});
 
-		//Change the month
-		var changeMonth = function(turn) {
-
+		var getMonth = function(action) {
+			var thisMonth = $scope.month;
+			var thisYear = $scope.year;
+			var thisMonthIndex;
+			if (action==="pre") {
+				thisMonthIndex = month_name.indexOf(thisMonth)-1;
+				if (thisMonthIndex===-1) {
+					thisMonthIndex = 11;
+					thisYear -= 1; 
+				}
+			} else if (action==="next") {
+				thisMonthIndex = month_name.indexOf(thisMonth)+1;
+				if (thisMonthIndex===12) {
+					thisMonthIndex = 0;
+					thisYear += 1; 
+				}
+			}
+			thisMonth = month_name[thisMonthIndex];
+			return {month: thisMonth, year: thisYear};
 		}
 
-		$("#preMonth").on("click", function(e) {
-			changeMonth("pre");
-		})
-
-		$("#nextMonth").on("click", function(e) {
-			changeMonth("pre");		
-		});
+		//Change the month
+		$scope.changeMonth = function() {
+			console.log(event.target.id);
+			var temp;
+			if (event.target.id==="preMonth") {
+				temp = getMonth("pre");
+			} else if (event.target.id==="nextMonth") {
+				temp = getMonth("next");
+			}
+			$scope.month = temp.month;
+			$scope.year = temp.year;
+			refreshCalendar($scope);
+		}
 
     	//---------------------------------------------------//
     	//-----------4. Music functions----------------------//
@@ -374,15 +411,17 @@ angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'ui.bootstrap', '
     	var styleModalShow = {
     		"opacity" : "1",
 			"transform": "scale(1)",
+			"z-index" : "10",
     	},
     		styleModalHide = {
     		"opacity" : "0",
 			"transform": "scale(.01)",
+			"z-index" : "0",
     	};
 
     	var styleBackModalShow = {
     		"opacity" : "0",
-			"transform": "rotateX(180deg) scale(1)",
+			"transform": "rotateY(180deg) scale(1)",
     	},
     	styleBackModalHide = {
     		"opacity" : "0",
@@ -391,29 +430,37 @@ angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'ui.bootstrap', '
 
     	var styleModalsContainerShow = {
     		"opacity" : ".7",
-			"transform": "scale(1)",
+			"z-index": "0",
     	},
     		styleModalsContainerHide = {
     		"opacity" : "0",
-			"transform": "scale(.01)",
+			"z-index": "-10",
     	};
+
+    	var modalsContainerShow = function() {
+			$("#modalsContainer").css(styleModalsContainerShow);
+    	}
+
+    	var modalsContainerHide = function() {
+			$("#modalsContainer").css(styleModalsContainerHide);
+    	}
 
 
 		$("#modalsContainer").on("click",function(e) {
-			$("#modalsContainer").css(styleModalsContainerHide);
-			$("#musicModalContainer").css(styleModalHide);
+			modalsContainerHide();
+			$("#musicModalContainer").css(styleModalsContainerHide);
 			$("#contactHomeModalContainer").css(styleModalHide);
 			$("#contactDetailsModalContainer").css(styleModalHide);
 		})
 
 		$("#contactList").on("click",function(e) {
-        	$("#modalsContainer").css(styleModalsContainerShow);
+        	modalsContainerShow();
 			$("#contactHomeModalContainer").css(styleModalShow);
-			$("#contactDetailsModalContainer").css(styleModalShow);
+			$("#contactDetailsModalContainer").css(styleBackModalShow);
 		})
 
 		$("#featherMusic").on("click",function(e) {
-        	$("#modalsContainer").css(styleModalsContainerShow);
+        	modalsContainerShow();
 			$("#musicModalContainer").css(styleModalShow);
         })
 
@@ -441,6 +488,22 @@ angular.module('myApp', ['ngRoute', 'ngResource', 'ngAnimate', 'ui.bootstrap', '
     	$scope.alarmMinites = genNumberArray(0, 60, 5);
 
     }])
+
+   // .controller('AlarmController', ['$scope', function (scope) {
+   //  	$scope.alarmSelect = function(option, type) {
+   //  		// switch(type) {
+   //  		// 	case "day": 
+   //  		// 		$scope.alarm.day = option;
+   //  		// 		break;
+   //  		// 	case "hour": 
+   //  		// 		$scope.alarm.hour = option;
+   //  		// 		break;
+   //  		// 	case "minites": 
+   //  		// 		$scope.alarm.minites = option;
+   //  		// 		break;
+   //  		// }
+   //  	}
+   //  }])
 
 
 //Set the news sliders
